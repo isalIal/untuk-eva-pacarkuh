@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valentine's Rose Garden</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Georgia", serif;
+        /* Warna latar belakang diubah menjadi Soft Pink Pastel */
+        background: linear-gradient(to bottom, #fff0f3, #ffccd5);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Pop-up Overlay: Diubah dari hitam ke warna transparan yang lembut */
+      #popup-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 240, 243, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .popup-box {
+        background: white;
+        padding: 40px;
+        border-radius: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+        max-width: 350px;
+        border: 1px solid #ffb6c1;
+      }
+
+      .btn-open {
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
+      }
+
+      .btn-open:hover {
+        transform: scale(1.05);
+        background: #c9184a;
+      }
+
+      /* Halaman Utama */
+      #main-page {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .content {
+        margin-top: 10vh;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 40px;
+        border-radius: 25px;
+        backdrop-filter: blur(8px);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        text-align: center;
+        color: #a94442;
+        box-shadow: 0 15px 35px rgba(255, 182, 193, 0.2);
+        max-width: 80%;
+      }
+
+      .content h2 {
+        font-size: 2.2em;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      .content p {
+        font-size: 1.1em;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .signature {
+        font-style: italic;
+        font-size: 1.1em;
+      }
+
+      /* Kebun Mawar */
+      .rose-garden {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 400px;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      .flower-container {
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transform-origin: bottom center;
+        animation: sway var(--speed) ease-in-out infinite alternate;
+      }
+
+      .flower-head {
+        font-size: var(--size);
+        line-height: 1;
+        z-index: 2;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.05));
+      }
+
+      .flower-stem {
+        width: 2px;
+        height: var(--stem-h);
+        background: linear-gradient(to top, #2d6a4f, #40916c);
+        border-radius: 2px;
+        margin-top: -5px;
+      }
+
+      @keyframes sway {
+        0% {
+          transform: rotate(-3deg);
+        }
+        100% {
+          transform: rotate(3deg);
+        }
+      }
+
+      .petal {
+        position: fixed;
+        top: -10%;
+        z-index: 5;
+        animation: fall linear forwards;
+        pointer-events: none;
+      }
+
+      @keyframes fall {
+        to {
+          transform: translateY(110vh) rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="bgMusic" loop>
+      <source src="musik.mp3" type="audio/mpeg" />
+      Browsermu tidak mendukung audio.
+    </audio>
+
+    <div id="popup-overlay">
+      <div class="popup-box">
+        <h1 style="color: #ff4d6d; margin-bottom: 10px">
+          Spesial untuk kamu sayang
+        </h1>
+        <p style="color: #666">Ada sebuah kata kata dari aku...</p>
+        <button class="btn-open" onclick="startApp()">
+          Di buka yah sayang
+        </button>
+      </div>
+    </div>
+
+    <div id="main-page">
+      <div class="content">
+        <h2>Happy Valentine Sayang ❤️</h2>
+        <p>
+          "Terima kasih telah mencintaiku dengan begitu hebat, Aku bersyukur
+          pada Tuhan karena telah menghadirkan bidadari sepertimu, Aku berjanji
+          akan menjaga kamu dan menyayangi kamu selamanya, karena bagiku, kamu
+          adalah tujuan akhir dari segala perjuanganku. Aku sayang kamu,
+          selamanya."
+        </p>
+        <p class="signature">
+          — Dari aku yang sealu menjadikan kamu tujuan aku
+        </p>
+      </div>
+      <div class="rose-garden" id="roseGarden"></div>
+    </div>
+
+    <script>
+      function startApp() {
+        document.getElementById("popup-overlay").style.display = "none";
+        document.getElementById("main-page").style.display = "flex";
+
+        const music = document.getElementById("bgMusic");
+        music.volume = 0;
+
+        music
+          .play()
+          .then(() => {
+            let fadeIn = setInterval(() => {
+              if (music.volume < 0.6) {
+                music.volume = Math.min(music.volume + 0.02, 0.6);
+              } else {
+                clearInterval(fadeIn);
+              }
+            }, 250);
+          })
+          .catch((error) => {
+            console.log("Audio play blocked. Periksa file musik.mp3.");
+          });
+
+        tanamMawarRimbun();
+        setInterval(hujanKelopak, 500);
+      }
+
+      function tanamMawarRimbun() {
+        const garden = document.getElementById("roseGarden");
+        const jenisBunga = ["🌹", "🌷", "🌸", "🌺", "🌹", "💖"];
+        for (let i = 0; i < 120; i++) {
+          const container = document.createElement("div");
+          container.className = "flower-container";
+          const stemHeight = Math.random() * 180 + 50;
+          container.style.left = Math.random() * 100 + "%";
+          container.style.setProperty("--stem-h", stemHeight + "px");
+          container.style.setProperty("--size", Math.random() * 20 + 18 + "px");
+          container.style.setProperty("--speed", Math.random() * 2 + 2 + "s");
+          container.style.animationDelay = Math.random() * -5 + "s";
+          container.style.zIndex = Math.floor(stemHeight);
+
+          const head = document.createElement("div");
+          head.className = "flower-head";
+          head.innerHTML =
+            jenisBunga[Math.floor(Math.random() * jenisBunga.length)];
+
+          const stem = document.createElement("div");
+          stem.className = "flower-stem";
+
+          container.appendChild(head);
+          container.appendChild(stem);
+          garden.appendChild(container);
+        }
+      }
+
+      function hujanKelopak() {
+        const petal = document.createElement("div");
+        petal.className = "petal";
+        petal.innerHTML = ["🌸", "💖", "🌷", "✨"][
+          Math.floor(Math.random() * 4)
+        ];
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.fontSize = Math.random() * 12 + 10 + "px";
+        petal.style.opacity = Math.random() * 0.7 + 0.3;
+        petal.style.animationDuration = Math.random() * 3 + 5 + "s";
+        document.body.appendChild(petal);
+        setTimeout(() => petal.remove(), 8000);
+      }
+    </script>
+  </body>
+</html>
